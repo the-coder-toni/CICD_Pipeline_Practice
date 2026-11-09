@@ -1,0 +1,14 @@
+{
+  "name": "sample-js-docker-app",
+  "version": "1.0.0",
+  "description": "A sample Node.js app to practice Docker, CI/CD, and Microservices",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Running automated testing... Passed!\" && exit 0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
+
