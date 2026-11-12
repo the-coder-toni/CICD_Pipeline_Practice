@@ -36,3 +36,29 @@ jobs:
         context: .
         push: false
         tags: sample-js-docker-app:latest
+
+          deploy:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Deploy Application to GCP Live Sandbox via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          if [ ! -d "CICD_Pipeline_Practice" ]; then
+            git clone https://github.com{{ github.repository }}.git
+          fi
+          cd CICD_Pipeline_Practice
+          git pull origin main
+
+          docker stop app-instance || true
+          docker rm app-instance || true
+
+          docker build -t node-live-app .
+          docker run -d --name app-instance -p 3000:3000 node-live-app
+
