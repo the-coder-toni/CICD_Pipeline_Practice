@@ -51,7 +51,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             if [ ! -d "CICD_Pipeline_Practice" ]; then
-              git clone https://github.com{{ github.repository }}.git
+              git clone https://github.com/the-coder-toni/CICD_Pipeline_Practice.git
             fi
             cd CICD_Pipeline_Practice
             git pull origin main
