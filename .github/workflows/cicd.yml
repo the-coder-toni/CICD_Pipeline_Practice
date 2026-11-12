@@ -48,9 +48,10 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             if [ ! -d "CICD_Pipeline_Practice" ]; then
-              git clone "https://github.com/${{ github.repository }}.git"
+              git clone https://github.com{{ github.repository }}.git
             fi
             cd CICD_Pipeline_Practice
             git pull origin main
