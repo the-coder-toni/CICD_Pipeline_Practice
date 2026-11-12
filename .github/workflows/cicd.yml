@@ -50,7 +50,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             if [ ! -d "CICD_Pipeline_Practice" ]; then
-              git clone https://github.com{{ github.repository }}.git
+              git clone "https://github.com/${{ github.repository }}.git"
             fi
             cd CICD_Pipeline_Practice
             git pull origin main
