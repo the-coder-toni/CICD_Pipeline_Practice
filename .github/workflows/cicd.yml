@@ -8,57 +8,55 @@ on:
 
 jobs:
   test-and-build:
-    # Always use Ubuntu/Linux runners to keep builds fast and completely free
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Source Code
-      uses: actions/checkout@v4
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js Environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        cache: 'npm'
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-    - name: Install Dependencies
-      run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-    - name: Run Automated Application Tests
-      run: npm test
+      - name: Run Automated Application Tests
+        run: npm test
 
-    - name: Setup Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build Local Docker Image Verification
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: false
-        tags: sample-js-docker-app:latest
+      - name: Build Local Docker Image Verification
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: sample-js-docker-app:latest
 
-          deploy:
+  deploy:
     needs: test-and-build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Deploy Application to GCP Live Sandbox via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          if [ ! -d "CICD_Pipeline_Practice" ]; then
-            git clone https://github.com{{ github.repository }}.git
-          fi
-          cd CICD_Pipeline_Practice
-          git pull origin main
+      - name: Deploy Application to GCP Live Sandbox via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            if [ ! -d "CICD_Pipeline_Practice" ]; then
+              git clone https://github.com{{ github.repository }}.git
+            fi
+            cd CICD_Pipeline_Practice
+            git pull origin main
 
-          docker stop app-instance || true
-          docker rm app-instance || true
+            docker stop app-instance || true
+            docker rm app-instance || true
 
-          docker build -t node-live-app .
-          docker run -d --name app-instance -p 3000:3000 node-live-app
-
+            docker build -t node-live-app .
+            docker run -d --name app-instance -p 3000:3000 node-live-app
